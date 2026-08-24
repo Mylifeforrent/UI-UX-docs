@@ -29,7 +29,7 @@ PRD → 信息架构 → 页面清单 → UI Brief → 灰度结构
 2. 进入 [Web 设计](docs/02-web-design/README.md)，先读 [信息架构](docs/02-web-design/information-architecture.md) 和 [企业 SaaS 页面](docs/02-web-design/enterprise-saas.md)。
 3. 复制 [UI Brief](docs/templates/ui-brief.md)、[页面清单](docs/templates/page-inventory.md) 和 [组件清单](docs/templates/component-inventory.md)。
 4. 用 [PRD 到原型](docs/06-engineering-workflow/prd-to-prototype.md) 产出灰度线框和状态矩阵。
-5. 阅读 [Figma 体系](docs/05-ai-design-workflow/figma-stack.md)，再进入 [原型到代码](docs/06-engineering-workflow/prototype-to-code.md)。
+5. 阅读 [Figma 体系](docs/05-ai-design-workflow/figma-stack.md)；想直接跑通全流程，用 [原型先行全流程实操](docs/05-ai-design-workflow/prototype-first-workflow.md)，再进入 [原型到代码](docs/06-engineering-workflow/prototype-to-code.md)。
 6. 按 [真实数据接入](docs/06-engineering-workflow/real-data-integration.md) 接 fixture/API，最后完成 [Web 工作台练习](docs/08-practice-projects/web-workbench.md)。
 7. 用 [视觉验收记录](docs/templates/visual-acceptance.md) 留下截图和问题证据。
 

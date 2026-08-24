@@ -11,6 +11,7 @@ PRD → [UI Brief](../templates/ui-brief.md) → Figma/Figma Make
 → 浏览器截图 → [视觉验收](../templates/visual-acceptance.md)
 ```
 
+- [原型先行全流程实操](prototype-first-workflow.md)：竞品拆解 → 业务建模 → Figma Make 原型 → PRD 反写 → MCP 生成代码的手把手教学。
 - [Figma 体系](figma-stack.md)：Figma、Figma Make、Figma MCP 的职责和生产边界。
 - [Prompt 与上下文](prompting-and-context.md)：可复制 Prompt、输出格式和数据护栏。
 - [Agent 协作](agent-collaboration.md)：产品分析、设计、评审和 Coding Agent 的分工。
