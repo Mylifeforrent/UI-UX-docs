@@ -11,9 +11,9 @@
 | **Figma Design** | 传统矢量设计文件（Frame/组件/Variables） | Copy design 之后：人精修，作为 MCP 的视觉源 | 需要人工整理命名与 Auto Layout |
 | **Figma AI** | 局部生成、改写和探索 | 在已有 Design 上改文案/变体，不替代 Make 验证 | 业务准确性、Token 和状态仍要人审 |
 | **Figma Make** | 用自然语言生成 code-backed 原型 | 把四件套变成可交互原型，**只验证交互** | 产出是验证用原型，**不直接进生产** |
-| **Figma MCP + Code Connect** | 把精修结构暴露给 Coding Agent；组件钉到真实 import | 让 Agent 读结构而非猜截图 | Remote 必须选区链接；无映射时禁止把中间表示当最终实现 |
+| **Figma MCP + Code Connect** | 把精修结构暴露给 Coding Agent；组件钉到真实 import | 让 Agent 读结构而非猜截图 | 取上下文靠选区链接；席位决定配额；无映射时禁止把中间表示当最终实现 |
 
-Copy design（[官方说明](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers)）把 Make 当前 preview 贴进 Design：**单向快照**，不自动绑设计系统、不可交互、不回写 Make。不要当成双向同步。Make「改本地仓库」是封闭 beta，不是主路径。
+Copy design（[官方说明](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers)）把 Make 当前 preview 贴进 Design：**单向快照**，不可交互、不回写 Make，组件与样式不自动挂设计系统。唯一的例外是变量——粘贴前先给目标 Design 文件挂上含 Variables 的库，官方会自动匹配并绑定，能省掉大半手工绑 Token 的活。不要当成双向同步。Make「改本地仓库」是封闭 beta，不是主路径。
 
 ## 后端类比
 
@@ -29,11 +29,14 @@ Copy design（[官方说明](https://help.figma.com/hc/en-us/articles/3506075968
 | | Remote（推荐） | Desktop（可选） |
 | --- | --- | --- |
 | 端点 | `https://mcp.figma.com/mcp` | `http://127.0.0.1:3845/mcp` |
+| 席位 | 所有席位与计划都能连 | 付费计划的 Dev/Full 席位 + 桌面端 |
 | 接入 | Cursor：`/add-plugin figma` 或 `mcp.json`；Claude Code：官方 plugin / `mcp add` | 须开 [Figma 桌面端](https://www.figma.com/downloads/) Dev Mode MCP |
-| 选区 | **看不到画布选区**，必须 Copy link to selection | 可选「实现当前选区」 |
+| 取上下文 | 链接式：Copy link to selection（客户端只解析 node-id） | 链接式，另支持「实现当前选区」 |
 | 适用 | 默认路径 | 特定企业内网 / 必须走本地 |
 
-截图只做回归，不当间距来源。一次一个 Frame，不要整页丢给 `get_design_context`。
+**能连上不等于跑得动。** 读取类工具按席位限流（[Rate limits & access](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/)）：Dev/Full 席位在 Professional / Organization 约 200 次/天，Enterprise 约 600 次/天；View / Collab 席位只有约 6 次/月，做不了持续的设计到代码闭环。排期前先用 `whoami` 确认席位，配额以官方表为准。
+
+截图只做回归，不当间距来源。一次一个 Frame，不要整页丢给 `get_design_context`——既容易读错节点，也白烧配额。
 
 ## Make kits / Guidelines（可选）
 
@@ -52,7 +55,7 @@ Copy design（[官方说明](https://help.figma.com/hc/en-us/articles/3506075968
 
 ## 准备清单
 
-- Figma 账号（Make、Copy design、MCP、Code Connect 席位以官方为准）
+- Figma 账号，且席位够用：Make 要付费计划的 Full 席位，MCP 的日/月配额按席位分档（见上）
 - 推荐 Remote MCP；桌面端用于 Design 精修，Desktop MCP 可选
 - 本地 Coding Agent（Claude Code / Cursor）
 - 已有组件库且有席位时，配置 [Code Connect](https://developers.figma.com/docs/code-connect/)
@@ -64,7 +67,7 @@ Copy design（[官方说明](https://help.figma.com/hc/en-us/articles/3506075968
 - Frame 命名 = 路由 + 状态，如 `/approvals/loading`、`/approvals/empty`
 - 布局一律 Auto Layout，禁止绝对定位裸摆
 - 重复元素抽成 Component；页面上是 **实例**，不要 detach
-- 颜色/间距存为 Variables（对应 [Design Token](../04-design-system/tokens.md)）
+- 颜色/间距存为 Variables：挂库后自动绑上的核对一遍，没绑上的手工补（对应 [Design Token](../04-design-system/tokens.md)）
 - 删隐藏层和无意义嵌套
 - Layer 面板逐个检查，不留未命名 Frame
 

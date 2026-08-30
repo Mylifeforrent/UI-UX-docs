@@ -11,7 +11,7 @@ Figma 不是“画完就丢”的静态交付物，而是设计上下文、原�
 | Figma Make | code-backed 原型，**只验证交互** | 四件套、已冻组件、交互 | 可交互原型 | **不把原型代码直接当生产代码**；禁止合入 git 生产目录 |
 | Figma MCP + Code Connect | 把精修 Frame 交给 Coding Agent | Frame 选区链接、组件、Token | Agent 可引用的上下文；组件钉到真实 import | 权限、命名、敏感文件隔离；无映射时禁止把中间表示当最终实现 |
 
-Copy design（[官方说明](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers)）把 Make 当前 preview 贴进 Design：**单向快照**，不自动绑设计系统、不可交互、不回写 Make。不要当成双向同步。Make「改本地仓库」是封闭 beta，不是主路径。
+Copy design（[官方说明](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers)）把 Make 当前 preview 贴进 Design：**单向快照**，不可交互、不回写 Make，组件与样式不自动挂设计系统。唯一的例外是变量——粘贴前先给目标 Design 文件挂上含 Variables 的库，官方会自动匹配并绑定，能省掉大半手工绑 Token 的活。不要当成双向同步。Make「改本地仓库」是封闭 beta，不是主路径。
 
 ## 后端类比
 
@@ -27,11 +27,14 @@ Copy design（[官方说明](https://help.figma.com/hc/en-us/articles/3506075968
 | | Remote（推荐） | Desktop（可选） |
 | --- | --- | --- |
 | 端点 | `https://mcp.figma.com/mcp` | `http://127.0.0.1:3845/mcp` |
+| 席位 | 所有席位与计划都能连 | 付费计划的 Dev/Full 席位 + 桌面端 |
 | 接入 | Cursor：`/add-plugin figma` 或 `mcp.json`；Claude Code：官方 plugin / `mcp add` | 须开 Figma 桌面端 Dev Mode MCP |
-| 选区 | **看不到画布选区**，必须 Copy link to selection（含 node-id） | 可选「当前选区」 |
+| 取上下文 | 链接式：Copy link to selection（客户端只解析 node-id） | 链接式，另支持「实现当前选区」 |
 | 适用 | 默认路径 | 特定企业内网 / 必须走本地 |
 
-截图只做回归，不当间距来源。一次一个 Frame，不要整页丢给 `get_design_context`。
+**能连上不等于跑得动。** 读取类工具按席位限流（[Rate limits & access](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/)）：Dev/Full 席位在 Professional / Organization 约 200 次/天，Enterprise 约 600 次/天；View / Collab 席位只有约 6 次/月，做不了持续的设计到代码闭环。排期前先用 `whoami` 确认席位，配额以官方表为准。
+
+截图只做回归，不当间距来源。一次一个 Frame，不要整页丢给 `get_design_context`——既容易读错节点，也白烧配额。
 
 ## Make kits / Guidelines（可选）
 
@@ -54,7 +57,7 @@ Copy design（[官方说明](https://help.figma.com/hc/en-us/articles/3506075968
 
 - Frame 命名 = 路由 + 状态，如 `/approvals/loading`
 - 一律 Auto Layout，禁止绝对定位裸摆
-- 颜色/间距绑 Variables，对应 [Design Token](../04-design-system/tokens.md)
+- 颜色/间距绑 Variables：挂库后自动绑上的核对一遍，没绑上的手工补，对应 [Design Token](../04-design-system/tokens.md)
 - 页面上是 **组件实例**，不要 detach；主组件放 `Components` 页
 - 删隐藏层和无意义嵌套；长文案用真实长度
 - Layer 面板不留未命名 Frame

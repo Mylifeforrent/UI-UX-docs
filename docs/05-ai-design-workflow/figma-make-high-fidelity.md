@@ -27,19 +27,23 @@
 7. 已有组件 npm 包时，优先用 Make kits + `guidelines.md` 提保真，不是必须。见 [Get started with Make kits](https://help.figma.com/hc/en-us/articles/39241689698839-Get-started-with-Make-kits)。
 8. Make「改本地仓库」是封闭 beta，**不是主路径**。主路径：Make 验证 → Copy design → 人精修 → MCP → 本地仓库。
 
-Copy design 官方说明：[Copy a Figma Make preview as design layers](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers)。限制：不自动绑设计系统、不可交互、不回写 Make。
+Copy design 官方说明：[Copy a Figma Make preview as design layers](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers)。限制：图层不回写 Make、不可交互、**组件与样式不自动挂设计系统**。但**变量会自动匹配绑定**——粘贴前先在目标 Design 文件挂上含 Variables 的库，能省掉大半手工绑 Token 的活。
 
 ## 准备清单
 
 ### 账号与席位（以官方为准）
 
-| 能力 | 官方入口 | 备注 |
+| 能力 | 官方入口 | 席位与可用性 |
 | --- | --- | --- |
-| Figma Make | [Explore Figma Make](https://help.figma.com/hc/en-us/articles/31304412302231-Explore-Figma-Make) | 付费 Full 席位可创建；其他套餐可能试用 |
-| Copy design | [Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) | 官方写明 paid plans |
-| Remote MCP（推荐） | [Guide to the Figma MCP server](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) · [Remote 安装](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/) | 端点 `https://mcp.figma.com/mcp`。远程 MCP **必须 Copy link to selection**，看不到画布选区 |
-| Desktop MCP（可选） | 同上 Guide · [Desktop 安装](https://developers.figma.com/docs/figma-mcp-server/local-server-installation/) | `http://127.0.0.1:3845/mcp`；Dev/Full + 桌面端。特定企业内网再用 |
-| Code Connect | [Code Connect](https://developers.figma.com/docs/code-connect/) | Org/Enterprise + Dev/Full。无映射时 Agent 会发明长得像的 div。无套餐则靠契约 + 组件清单硬约束 |
+| Figma Make | [Explore Figma Make](https://help.figma.com/hc/en-us/articles/31304412302231-Explore-Figma-Make) | 付费计划的 Full 席位；其他席位与计划可试用 |
+| Copy design | [Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) | 所有付费计划可用 |
+| Remote MCP（推荐） | [Guide to the Figma MCP server](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) · [Remote 安装](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/) | 端点 `https://mcp.figma.com/mcp`。所有席位与计划都能连，但用量差别极大，见下 |
+| Desktop MCP（可选） | 同上 Guide · [Desktop 安装](https://developers.figma.com/docs/figma-mcp-server/local-server-installation/) | 付费计划的 Dev/Full 席位 + 桌面端，`http://127.0.0.1:3845/mcp`。特定企业内网再用 |
+| Code Connect | [Code Connect](https://developers.figma.com/docs/code-connect/) | Org/Enterprise + Dev/Full。无映射时 Agent 会发明长得像的 div；无套餐则靠契约 + 组件清单硬约束 |
+
+**先算用量再排期。** MCP 的读取类工具有配额（[Rate limits & access](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/)）：Dev/Full 席位在 Professional / Organization 约 200 次/天，Enterprise 约 600 次/天；View / Collab 席位只有约 6 次/月，等于跑不动本流程。开工前让 Agent 调 `whoami` 确认账号席位。配额会调整，以官方表为准。
+
+取设计上下文是**链接式**：右键 Frame → **Copy link to selection**，客户端只解析其中的 node-id，不会打开 URL。桌面端额外支持「实现当前选区」。
 
 企业数据先脱敏。不要把真实订单号、客户手机号、API Key 贴进 Make 聊天。
 
@@ -97,6 +101,7 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 ### 准备检查
 
 - [ ] 能打开 Make 与 Design 文件
+- [ ] 席位与 MCP 配额够用（View/Collab 先升 Dev/Full，否则本流程跑不动）
 - [ ] Cursor 已连 Remote MCP（或书面选用 Desktop）
 - [ ] 四件套已复制；`AGENTS.md` + `docs/contracts/` 将在 Step A/D 写
 - [ ] PRD 已脱敏
@@ -104,7 +109,7 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 
 ## 全景时间盒
 
-两人，只做 `/approvals` 全 8 态 + `/orders` 默认/加载/空数据作复用证明。约 **12–16 小时**。不要压缩 Step D 和 H。
+范围：`/approvals` 全 8 态 + `/orders` 默认/加载/空数据作复用证明。单人串行约 **17 小时**，对应文末「今天只做这些」的 6 个半天。F1 之后可两人分页并行缩短墙钟时间，但组件仍须串行，总工时不变。不要压缩 Step D 和 H。
 
 ```text
  0.5h   准备（账号 / Remote MCP / 四件套空文件）
@@ -282,14 +287,14 @@ Constraints：禁止修改任何文件；禁止页面里先做临时日期控件
 
 **做什么**：解法 3。把 **当前预览快照** 变成可编辑图层。人改 Auto Layout、命名、组件实例、Variables。**不要未整理就 MCP。**
 
-官方限制：[Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) —— 图层不连回 Make；不自动挂设计系统；不可交互。每个状态、每个关键 Dialog **各 Copy 一次**。
+官方限制：[Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) —— 图层不连回 Make；不可交互；组件与样式不自动挂设计系统。每个状态、每个关键 Dialog **各 Copy 一次**。
 
-**点哪里**：Make preview 走到目标态 → 顶部 **Copy design**（复杂界面可能要等，以官方提示为准）→ 粘贴到 Design → 最外层改名为 `/approvals/default`。精修清单：
+**点哪里**：**先**在目标 Design 文件挂上含 Variables 的库（官方会自动匹配并绑定可用变量，少一半手工活）→ Make preview 走到目标态 → 顶部 **Copy design**（复杂界面可能要等，以官方提示为准）→ 粘贴到 Design → 最外层改名为 `/approvals/default`。精修清单：
 
 - Auto Layout（Shift+A），禁止绝对定位裸摆
 - Frame 命名 = 路由 + 状态
 - 重复元素做成 Component，页面上是 **instance**，不要 detach
-- 颜色/间距绑 Variables，对应 [Design Token](../04-design-system/tokens.md)
+- 颜色/间距绑 Variables：挂库后自动绑上的核对一遍，没绑上的手工补，对应 [Design Token](../04-design-system/tokens.md)
 - 删隐藏层和无意义嵌套；长文案用真实长度
 - 建议 Pages：`Cover` / `Components` / `Approvals` / `Orders`
 
@@ -476,7 +481,7 @@ Constraints：禁止顺手修 UI-002；禁止全局检查所有对齐。
 | 1 | AI 自称复用 FilterBar，实际页面有一份私有 class | 页面写了覆盖样式或复制 DOM | 搜 `className`/`style=`；删页面私有样式 |
 | 2 | `/orders` 布局跟着详情稿走，表格变成卡片 | 贴错 Frame 或让它「参考某页」 | 只贴 `/orders/default`；禁止参考详情 |
 | 3 | MCP 读不到 Frame | 贴了文件级 URL、未授权、Desktop 未开 | **Copy link to selection**；Remote 走 OAuth |
-| 4 | 有上下文但间距仍错 | 没用 variables；或 Design 未绑 Variables | `get_variable_defs`；回 Step H 绑变量 |
+| 4 | 有上下文但间距仍错 | 没用 variables；或粘贴前没挂变量库 | `get_variable_defs`；回 Step H 挂库并补绑 |
 | 5 | inline style 盖掉 class | MCP 示例被原样粘贴 | 本任务只删 inline；以契约 DOM 为准 |
 | 6 | 一次改太多，只完成一半 | 一条 Prompt 含 8 态 + 重构 | git 还原；拆回一次一态 |
 | 7 | Make 很漂亮，代码很丑 | 把 Make 当生产；或没经 Design 精修 | 走 Copy design + 人修 + MCP |
@@ -489,6 +494,7 @@ Constraints：禁止顺手修 UI-002；禁止全局检查所有对齐。
 | 14 | 部分失败只 toast | 未按 8 态做 Frame | 补 `/approvals/partial-failure`；独立任务 |
 | 15 | 远程 MCP 看不到选区 | Remote 本来就看不到画布 | 必须 Copy link to selection |
 | 16 | 整页丢给 get_design_context 后胡写 | 节点太大、无 Code Connect | 一次一个 Frame；无映射则强制库存组件 |
+| 17 | MCP 突然全部调用失败或报配额 | 席位是 View/Collab，或当天读取超额 | `whoami` 查席位；升 Dev/Full；改用一次一个 Frame 省调用 |
 
 ## 专业设计师检查表（压缩）
 
@@ -515,6 +521,7 @@ Constraints：禁止顺手修 UI-002；禁止全局检查所有对齐。
 | Make kits（已有组件包时优先） | [Make kits](https://help.figma.com/hc/en-us/articles/39241689698839-Get-started-with-Make-kits) |
 | Remote MCP、`https://mcp.figma.com/mcp`、Cursor `/add-plugin figma` | [Remote 安装](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/) · [MCP Guide](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) |
 | Desktop MCP `http://127.0.0.1:3845/mcp` | [Desktop 安装](https://developers.figma.com/docs/figma-mcp-server/local-server-installation/) |
+| MCP 席位与用量配额 | [Rate limits & access](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/) |
 | Code Connect | [Code Connect](https://developers.figma.com/docs/code-connect/) |
 | Auto Layout / 组件 / Variables | [Auto layout](https://help.figma.com/hc/en-us/articles/360040451373-Guide-to-auto-layout) · [Components](https://help.figma.com/hc/en-us/articles/360038663154-Create-components-to-reuse-in-designs) · [Variables](https://help.figma.com/hc/en-us/articles/15145852043927-Create-and-manage-variables-and-collections) |
 | 产品入口 | [figma.com/make](https://www.figma.com/make/) |

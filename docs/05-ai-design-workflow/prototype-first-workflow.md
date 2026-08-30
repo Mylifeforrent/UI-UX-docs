@@ -45,7 +45,7 @@ Demo 案例：仓库贯穿案例「订单审批工作台」中的审批队列页
 | --- | --- | --- | --- |
 | 1 | PRD 太长一次生成会失真 | 先壳层 + 基本功能，再逐页、逐状态细化。Make 官方也要求 layout first、frame by frame、plan mode | 整份 PRD 一次生成整站 |
 | 2 | 页面组件不规范 | 组件库先行并**人冻结**；缺组件必须提案、人批准后才入库；后续靠改组件保持一致 | 把「有则复用无则新建」交给 AI；「全局抽取组件并改所有引用」 |
-| 3 | Make 文字传不了视觉 | Make 只验证交互；[Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) 把当前 preview 贴进 Design（单向快照，不自动绑设计系统、不可交互、不回写 Make）；人做 Auto Layout / 语义命名 / 组件实例 / Variables；MCP 读精修 Frame（选区链接含 node-id） | 把 Make 当生产；截图当间距来源；Copy design 当双向同步 |
+| 3 | Make 文字传不了视觉 | Make 只验证交互；[Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) 把当前 preview 贴进 Design（单向快照，不可交互、不回写 Make；粘贴前先挂变量库，变量会自动绑上，组件与样式仍要人挂）；人做 Auto Layout / 语义命名 / 组件实例 / Variables；MCP 读精修 Frame（选区链接含 node-id） | 把 Make 当生产；截图当间距来源；Copy design 当双向同步 |
 
 Make 产出 = 验证用 code-backed 原型，**禁止当生产代码**。MCP `get_design_context` 是 React+Tailwind **中间表示**，要翻译进本仓库组件 + Token。无 [Code Connect](https://developers.figma.com/docs/code-connect/)（Org/Enterprise + Dev/Full）时，Agent 会发明长得像的 div，必须靠契约钉死。Make「改本地仓库」是封闭 beta，不是主路径。已有组件 npm 包时优先 [Make kits](https://help.figma.com/hc/en-us/articles/39241689698839-Get-started-with-Make-kits) + `guidelines.md`，不是必须。
 
@@ -78,10 +78,7 @@ Frame 命名 = 路由 + 状态，如 `/approvals/loading`。8 态：默认、加
 
 对应保姆级教程：A 四件套 → B 灰度 → C 壳层 → D 冻组件 → E/F Make → G 入库 → H Copy design → I–K MCP 与验收。
 
-| MCP | 端点 | 何时用 |
-| --- | --- | --- |
-| Remote（推荐） | `https://mcp.figma.com/mcp` | 默认。Cursor `/add-plugin figma`。看不到画布选区，必须 Copy link to selection |
-| Desktop（可选） | `http://127.0.0.1:3845/mcp` | 特定企业内网。须开桌面端 Dev Mode |
+默认用 Remote MCP，取上下文一律 Copy link to selection。端点、席位和用量配额见 [Figma 体系](figma-stack.md)——View / Collab 席位每月只有个位数调用额度，排期前先确认。
 
 路径 B 第一次进 Make 用下面这条，不要把整份 PRD 丢进去：
 
@@ -112,7 +109,7 @@ Frame 命名 = 路由 + 状态，如 `/approvals/loading`。8 态：默认、加
 
 ## 第 0 步：准备（15 分钟）
 
-需要：Figma 账号（[Figma Make](https://www.figma.com/make/)，Make、Copy design、MCP、Code Connect 的席位以官方为准）、本地 Coding Agent（Claude Code 或 Cursor）。推荐 **Remote MCP** `https://mcp.figma.com/mcp`（Cursor 可用 `/add-plugin figma` 或 `mcp.json`）。[Figma 桌面端](https://www.figma.com/downloads/)用于 Design 精修；Desktop MCP `http://127.0.0.1:3845/mcp` 仅特定企业场景。安装以 [Remote 安装](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/) 与 [MCP Guide](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) 为准。
+需要：Figma 账号（Make 要付费计划的 Full 席位；MCP 的日/月调用配额按席位分档，View / Collab 席位跑不动，详见 [Figma 体系](figma-stack.md)）、本地 Coding Agent（Claude Code 或 Cursor）。推荐 **Remote MCP** `https://mcp.figma.com/mcp`（Cursor 可用 `/add-plugin figma` 或 `mcp.json`）。[Figma 桌面端](https://www.figma.com/downloads/)用于 Design 精修；Desktop MCP `http://127.0.0.1:3845/mcp` 仅特定企业场景。安装以 [Remote 安装](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/) 与 [MCP Guide](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) 为准。
 
 先把四份模板复制到项目目录并建好空文件：
 
@@ -238,7 +235,7 @@ Demo 结果示例：主管批量审批订单；风险任务 = 驳回（需理由
 
 1. 每个 state 截一张图，贴进 `design-review.md`，先评主任务、信息层级、危险操作，再评颜色。
 2. 结论写"已确认决策 / 被拒绝方案"，未通过退回第 4 步迭代。
-3. 用官方 **Copy design** 把当前 preview 贴进 Figma Design（单向快照：不自动绑设计系统、不可交互、不回写 Make）。每个状态、每个关键 Dialog 各 Copy 一次。入口以 [Copy a Figma Make preview as design layers](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) 为准。然后**人**整理（MCP 读的就是这份结构，不要未整理就 MCP）：
+3. 用官方 **Copy design** 把当前 preview 贴进 Figma Design（单向快照：不可交互、不回写 Make，组件与样式不自动挂设计系统）。粘贴前先给目标 Design 文件挂上含 Variables 的库，变量会自动匹配绑定。每个状态、每个关键 Dialog 各 Copy 一次。入口以 [Copy a Figma Make preview as design layers](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) 为准。然后**人**整理（MCP 读的就是这份结构，不要未整理就 MCP）：
    - Frame 命名 = 路由 + 状态，如 `/approvals/loading`、`/approvals/empty`；
    - 布局用 Auto Layout，不许绝对定位裸摆；
    - 重复元素做成 Component，页面上是实例，不要 detach；
@@ -275,7 +272,7 @@ Demo 结果示例：主管批量审批订单；风险任务 = 驳回（需理由
    ```bash
    claude mcp add --transport http figma https://mcp.figma.com/mcp
    ```
-   远程 MCP **必须 Copy link to selection**（链接含 node-id），看不到画布选区。席位与能力以 [MCP Guide](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) 为准。
+   取上下文是链接式：右键 **Copy link to selection**（链接含 node-id），客户端只解析 node-id、不会打开 URL。席位、用量配额与能力以 [MCP Guide](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) 为准。
 2. **Desktop MCP** 可选：Figma 桌面端 Dev Mode 启用本地服务 `http://127.0.0.1:3845/mcp`（Dev/Full 席位，特定企业内网再用）。注册示例：
    ```bash
    claude mcp add --transport http figma-desktop http://127.0.0.1:3845/mcp

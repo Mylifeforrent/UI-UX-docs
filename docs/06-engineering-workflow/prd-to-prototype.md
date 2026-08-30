@@ -2,13 +2,7 @@
 
 这一步是**路径 B** 的工程入口：已有完备 PRD，据此生成可评审原型，再落到代码。与 [原型先行路径 A](../05-ai-design-workflow/prototype-first-workflow.md) 相反——这里 PRD 是设计的前置输入。逐步操作、契约模板与 `AGENTS.md` 见 [Figma Make 高保真保姆级教程](../05-ai-design-workflow/figma-make-high-fidelity.md)。
 
-人拥有契约（组件清单、Token、命名、状态矩阵）；AI 只在冻结契约内执行。三个解法必须按序做实，不要弱化：
-
-| # | 问题 | 解法 | 禁止 |
-| --- | --- | --- | --- |
-| 1 | PRD 太长一次生成会失真 | 先壳层 + 基本功能，再逐页、逐状态细化 | 整份 PRD 一次生成整站 |
-| 2 | 页面组件不规范 | 组件库先行并**人冻结**；缺组件提案、人批准后才入库 | 把「有则复用无则新建」交给 AI |
-| 3 | Make 文字传不了视觉 | Make 只验证交互 → Copy design → 人精修 → MCP 读精修 Frame | 把 Make zip 当生产；截图当间距来源 |
+人拥有契约（组件清单、Token、命名、状态矩阵）；AI 只在冻结契约内执行。下面的操作顺序依次消解路径 B 的三个典型失败：PRD 太长就先壳后逐页（步骤 1、4）；组件不规范就先冻库、缺则审批入库（步骤 3）；文字传不了视觉就 Copy design 精修后走 MCP（步骤 5、6）。三者的完整对照表在 [Figma Make 高保真保姆级教程](../05-ai-design-workflow/figma-make-high-fidelity.md)。
 
 Make 产出 = 验证用 code-backed 原型，**禁止当生产代码**。MCP `get_design_context` 是 React+Tailwind 中间表示，要翻译进本仓库组件 + Token。
 
@@ -121,11 +115,11 @@ B. 申请新组件某某（必须写出现有组件做不到的点）
 
 ### 5. Copy design → 人精修
 
-用官方 [Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) 把当前 preview 贴进 Figma Design（单向快照：不自动绑设计系统、不可交互、不回写 Make）。人做 Auto Layout / 语义命名 / 组件实例 / Variables。不要未整理就 MCP。清单见 [Figma 体系](../05-ai-design-workflow/figma-stack.md) 与保姆级教程 [Step H](../05-ai-design-workflow/figma-make-high-fidelity.md)。
+用官方 [Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) 把当前 preview 贴进 Figma Design（单向快照：不可交互、不回写 Make）。粘贴前先给目标 Design 文件挂上含 Variables 的库，官方会自动匹配绑定变量；组件与样式仍要人挂。之后人做 Auto Layout / 语义命名 / 组件实例 / 补绑 Variables。不要未整理就 MCP。清单见 [Figma 体系](../05-ai-design-workflow/figma-stack.md) 与保姆级教程 [Step H](../05-ai-design-workflow/figma-make-high-fidelity.md)。
 
 ### 6. MCP → 代码
 
-推荐 Remote MCP `https://mcp.figma.com/mcp`（Cursor `/add-plugin figma`）；Desktop `http://127.0.0.1:3845/mcp` 可选。必须 Copy link to selection。有席位则配 [Code Connect](https://developers.figma.com/docs/code-connect/)。一次一个 Frame，先计划后写码。见 [原型到代码](prototype-to-code.md) 与保姆级教程 [Step I–K](../05-ai-design-workflow/figma-make-high-fidelity.md)。
+推荐 Remote MCP `https://mcp.figma.com/mcp`（Cursor `/add-plugin figma`）；Desktop `http://127.0.0.1:3845/mcp` 可选。取上下文一律 Copy link to selection。有席位则配 [Code Connect](https://developers.figma.com/docs/code-connect/)。一次一个 Frame，先计划后写码——MCP 读取按席位限流，整页乱读会烧光当天配额。见 [原型到代码](prototype-to-code.md) 与保姆级教程 [Step I–K](../05-ai-design-workflow/figma-make-high-fidelity.md)。
 
 ## 完成标准
 

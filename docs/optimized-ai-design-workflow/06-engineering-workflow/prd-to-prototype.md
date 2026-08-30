@@ -4,13 +4,7 @@
 
 PRD 先行路线（路径 B）：已有签字 PRD，据此生成原型。与[原型先行路径 A](../imports/prototype-first-workflow.md)相反——这里 PRD 是设计的前置输入。适用于强合规、需求已定的场景。逐步操作见 [Figma Make 高保真保姆级教程](../imports/figma-make-high-fidelity.md) Step A–K。
 
-人拥有契约（组件清单、Token、命名、状态矩阵）；AI 只在冻结契约内执行。三个解法必须按序做实，不要弱化：
-
-| # | 问题 | 解法 | 禁止 |
-| --- | --- | --- | --- |
-| 1 | PRD 太长一次生成会失真 | 先壳层 + 基本功能，再逐页、逐状态细化。Make 官方也要求 layout first、frame by frame、plan mode | 整份 PRD 一次生成整站 |
-| 2 | 页面组件不规范 | 组件库先行并**人冻结**；缺组件提案、人批准后才入库；后续靠改组件 | 把「有则复用无则新建」交给 AI；全局抽取 |
-| 3 | Make 文字传不了视觉 | Make 只验证交互；[Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) 贴进 Design（单向快照）；人精修后 MCP 读选区链接 | 把 Make 当生产；截图当间距来源 |
+人拥有契约（组件清单、Token、命名、状态矩阵）；AI 只在冻结契约内执行。下面的步骤依次消解路径 B 的三个典型失败：PRD 太长就先壳后逐页（步骤 1、4）；组件不规范就先冻库、缺则审批入库（步骤 3）；文字传不了视觉就 [Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) 精修后走 MCP（步骤 5、6）。三者的完整对照表在 [Figma Make 高保真保姆级教程](../imports/figma-make-high-fidelity.md)。
 
 Make 产出 = 验证用 code-backed 原型，**禁止当生产代码**。MCP `get_design_context` 是 React+Tailwind 中间表示，要翻译进本仓库组件 + Token。无 [Code Connect](https://developers.figma.com/docs/code-connect/) 时 Agent 会发明长得像的 div。
 
@@ -26,8 +20,8 @@ Make 产出 = 验证用 code-backed 原型，**禁止当生产代码**。MCP `ge
 2. **手画灰度线框**（见下）。骨架 ≈ 可点 demo 的结构，不定色。
 3. **冻结壳层 + 组件清单 / 契约**：先冻 AppShell，再按批准名单一次一个组件写 `docs/contracts/`，由 `AGENTS.md` 链接。缺组件走入库审批，**禁止 AI 自行新建**。
 4. **Make：先壳 + 一页，再逐页逐态**：同保姆级教程 [Step E / F](../imports/figma-make-high-fidelity.md)，不要指望一次生成全部。已有组件包时优先 [Make kits](https://help.figma.com/hc/en-us/articles/39241689698839-Get-started-with-Make-kits)，不是必须。Make「改本地仓库」是封闭 beta，不是主路径。
-5. **Copy design → 人精修**：单向快照，不回写 Make。清单见 [Figma 体系](../imports/figma-stack.md) 与保姆级 [Step H](../imports/figma-make-high-fidelity.md)。不要未整理就 MCP。
-6. **MCP → 代码**：Remote 优先；一次一个 Frame；先计划后写码。见 [原型到代码](prototype-to-code.md) 与保姆级 [Step I–K](../imports/figma-make-high-fidelity.md)。
+5. **Copy design → 人精修**：单向快照，不回写 Make。粘贴前先给目标 Design 文件挂上含 Variables 的库，变量会自动绑上；组件与样式仍要人挂。清单见 [Figma 体系](../imports/figma-stack.md) 与保姆级 [Step H](../imports/figma-make-high-fidelity.md)。不要未整理就 MCP。
+6. **MCP → 代码**：Remote 优先；一次一个 Frame；先计划后写码。MCP 读取按席位限流，整页乱读会烧光当天配额。见 [原型到代码](prototype-to-code.md) 与保姆级 [Step I–K](../imports/figma-make-high-fidelity.md)。
 
 ## 可复制 Prompt（PRD → 四件套）
 
