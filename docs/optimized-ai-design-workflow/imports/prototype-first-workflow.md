@@ -1,6 +1,6 @@
 # 原型先行全流程实操
 
-这是一条手把手教学路线：从竞品拆解出发，用 Figma Make 生成原型，人工评审后反写 PRD，再通过 Figma MCP 交给本地 Coding Agent 生成代码。它和 [PRD 到原型](../06-engineering-workflow/prd-to-prototype.md) 的区别是顺序：PRD 是已验证原型的"记录"，不是设计的"前置输入"。
+这是一条手把手教学路线：从竞品拆解出发，用 Figma Make 生成原型，人工评审后反写 PRD，再通过 Figma MCP 交给本地 Coding Agent 生成代码。它和 [PRD 到原型](../06-engineering-workflow/prd-to-prototype.md) 的区别是顺序：路径 A 里 PRD 是已验证原型的"记录"，不是设计的"前置输入"。需求已有完备 PRD 时走路径 B，不要把本文改成只剩 PRD 先行。
 
 适用判断：
 
@@ -10,8 +10,14 @@
 | 有设计师协作、需要可评审的视觉基准 | 用 |
 | 强合规、需 PRD 签字后才能投入设计 | 不用，走 [工程工作流](../06-engineering-workflow/README.md) |
 | 一次性 MVP、不追求视觉可控 | 不用，PRD 直接给 v0/Lovable，见 [工具矩阵](../07-tools/tool-matrix.md) |
+| 已有完善 PRD、要用 Make 做高保真并落地代码 | 用路径 B，详见下文与 [Figma Make 高保真保姆级教程](figma-make-high-fidelity.md) |
 
 Demo 案例：仓库贯穿案例「订单审批工作台」中的审批队列页 `/approvals`。跑通这一页，其余页面同理。
+
+## 两条路径
+
+- **路径 A**：需求不确定，走本文第 1–8 步（竞品拆解 → Make 原型 → 反写 PRD → MCP 落地）。PRD 是已验证原型的记录，不是设计的前置输入。
+- **路径 B**：PRD 已完备，跳过探索性竞品定稿，从四件套 + 壳层 + 冻组件开始。操作逐步看 [Figma Make 高保真保姆级教程](figma-make-high-fidelity.md)；工程 SOP 见 [PRD 到原型](../06-engineering-workflow/prd-to-prototype.md)。
 
 ## 读者画像与前置能力
 
@@ -35,6 +41,8 @@ Demo 案例：仓库贯穿案例「订单审批工作台」中的审批队列页
 
 建议：先低保真定骨架（第 3 步），确认后再进高保真（第 4 步），避免在没定结构时纠结配色。
 
+「功能 demo 最后再 UI」适合交互未定（路径 A 的低保真阶段）。PRD 已定要高保真走 Make（路径 B）。推荐混合：骨架 ≈ 可点 demo（用已冻组件默认外观），精修放在组件冻结之后。
+
 ## 全景图
 
 ```text
@@ -49,9 +57,96 @@ Demo 案例：仓库贯穿案例「订单审批工作台」中的审批队列页
 ⑧ 截图验收闭环
 ```
 
+上图是路径 A。路径 B 从四件套进入，不经过①–③的探索性定稿，也不做⑥反写 PRD。
+
+## 路径 B：PRD 已完备的高保真做法
+
+人拥有契约（组件清单、Token、命名、状态矩阵）；AI 只在冻结契约内执行。逐步操作、可复制 Prompt、契约模板与 `AGENTS.md` 示例见 [Figma Make 高保真保姆级教程](figma-make-high-fidelity.md) Step A–K。工程入口见 [PRD 到原型](../06-engineering-workflow/prd-to-prototype.md)。
+
+三个问题对应三个解法，不要弱化：
+
+| # | 问题 | 解法 | 禁止 |
+| --- | --- | --- | --- |
+| 1 | PRD 太长一次生成会失真 | 先壳层 + 基本功能，再逐页、逐状态细化。Make 官方也要求 layout first、frame by frame、plan mode | 整份 PRD 一次生成整站 |
+| 2 | 页面组件不规范 | 组件库先行并**人冻结**；缺组件必须提案、人批准后才入库；后续靠改组件保持一致 | 把「有则复用无则新建」交给 AI；「全局抽取组件并改所有引用」 |
+| 3 | Make 文字传不了视觉 | Make 只验证交互；[Copy design](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) 把当前 preview 贴进 Design（单向快照，不自动绑设计系统、不可交互、不回写 Make）；人做 Auto Layout / 语义命名 / 组件实例 / Variables；MCP 读精修 Frame（选区链接含 node-id） | 把 Make 当生产；截图当间距来源；Copy design 当双向同步 |
+
+Make 产出 = 验证用 code-backed 原型，**禁止当生产代码**。MCP `get_design_context` 是 React+Tailwind **中间表示**，要翻译进本仓库组件 + Token。无 [Code Connect](https://developers.figma.com/docs/code-connect/)（Org/Enterprise + Dev/Full）时，Agent 会发明长得像的 div，必须靠契约钉死。Make「改本地仓库」是封闭 beta，不是主路径。已有组件 npm 包时优先 [Make kits](https://help.figma.com/hc/en-us/articles/39241689698839-Get-started-with-Make-kits) + `guidelines.md`，不是必须。
+
+推荐流水线：
+
+```text
+契约冻结（四件套 + 组件契约 + AGENTS.md）
+  → Make 骨架（Plan：壳 + /approvals 默认态）
+  → 组件库人冻结（F1）
+  → 逐页细化（一次一页、一次一态；缺组件走入库审批）
+  → Copy design 精修（F2）
+  → MCP 小批次落地（先计划后写码）
+  → 验收
+```
+
+| 阶段 | 人做 | AI 做 | 禁止 AI | 出口门禁 |
+| --- | --- | --- | --- | --- |
+| 四件套 A | 定范围、批权限矩阵 | 从 PRD 填 Brief/清单/8 态 | 生成界面 | 路由锁死；8 态有原文案 |
+| 灰度 B | 走查主任务 | 画纯文本线框 | 定色、进 Make | 空 ≠ 无结果；批量按钮带数量 |
+| 壳层 C | 批准 DOM/类名 | 写 AppShell 契约 | 顺带做表格 | 内容槽为空 |
+| 冻组件 D | **人冻结** F1；IDE 看 diff | 按批准名单一次一个组件 | 自行新建；全局抽取 | 契约已链进 `AGENTS.md` |
+| Make E/F | 点预览走主流程 | 壳 + 默认态，再逐态 | 生成整站 | Make 代码未进生产 git |
+| 入库 G | 书面批准或驳回 | 只提案，批准后才实现 | 页面里先做临时控件 | inventory 有新行 |
+| 精修 H | Auto Layout / 命名 / 实例 / Variables | 只出检查单 | 未整理就 MCP | Frame = 路由 + 状态 |
+| MCP I–K | 确认计划；IDE 底线 | 读选区链接；翻译进库存组件 | 把 Tailwind 中间表示当生产 | 生产代码不来自 Make zip |
+
+Frame 命名 = 路由 + 状态，如 `/approvals/loading`。8 态：默认、加载、空数据、无结果、错误、无权限、成功、部分失败。一次一事；Prompt 必须有「禁止修改」；换页 = 新会话；未冻结组件库禁止多窗口并行。新任务先读 `AGENTS.md` 与每组件契约 md（模板见保姆级教程）。
+
+对应保姆级教程：A 四件套 → B 灰度 → C 壳层 → D 冻组件 → E/F Make → G 入库 → H Copy design → I–K MCP 与验收。
+
+| MCP | 端点 | 何时用 |
+| --- | --- | --- |
+| Remote（推荐） | `https://mcp.figma.com/mcp` | 默认。Cursor `/add-plugin figma`。看不到画布选区，必须 Copy link to selection |
+| Desktop（可选） | `http://127.0.0.1:3845/mcp` | 特定企业内网。须开桌面端 Dev Mode |
+
+路径 B 第一次进 Make 用下面这条，不要把整份 PRD 丢进去：
+
+```text
+这是验证用 code-backed 原型，不是生产代码。先出 Plan。
+本轮只做 AppShell + /approvals 默认态。
+本轮不做：其余 7 态、/orders 列表、设置页。
+组件名对照 docs/component-inventory.md，禁止自行新建。禁止修改已冻结契约。
+```
+
+缺组件时 AI 只许提案：
+
+```text
+现有组件已冻结，不得自行新建。判断能否用现有组件完成当前缺口。
+输出二选一，不要写代码：A 复用某某；B 申请入库某某（必须写出现有组件做不到的点）。
+禁止修改任何文件。
+```
+
+好/坏提示词对比（路径 B 启动 Make）：
+
+- ❌ 坏：`根据这份 PRD 生成整个订单后台，所有页面和状态一次出齐。` —— 整站一次生成，必失真；AI 还会自行新建组件。
+- ✅ 好：上面的启动 Prompt —— 范围锁死、禁止修改写清、先计划后 Build。
+
+好/坏提示词对比（缺组件）：
+
+- ❌ 坏：`日期筛选没有现成组件，你看着办，能复用就复用不能就新建。` —— 把判断权交给 AI。
+- ✅ 好：上面的提案 Prompt —— 只提案、不改文件、等人书面批准。
+
+后端视角：路径 B 的「冻组件」等于先发版 API 契约再写调用方。没有冻结的组件清单，多页并行就是两个服务各写一套 DTO。
+
+和路径 A 的关系：第 4–5、7–8 步（Make、Copy design、MCP、验收）两边共用，只是路径 B 用四件套+冻库替换第 1–3 步和第 6 步反写 PRD。多页面时四件套+冻库一次做完，Make 之后按页循环。
+
+路径 B 走完一页的出口：
+
+- [ ] 组件清单已冻，`AGENTS.md` 已链接契约
+- [ ] `/approvals` 至少覆盖默认 + 加载 + 空 + 无结果 + 错误 + 无权限 + 一条成功或部分失败
+- [ ] Design Frame 名 = 路由 + 状态，已 Auto Layout，页面上是组件实例
+- [ ] 生产代码来自 MCP 读精修 Frame，不是 Make zip，也不是截图像素还原
+- [ ] 人用 IDE 看过 diff：无同义组件、无硬编码色、无页面私有表格 CSS
+
 ## 第 0 步：准备（15 分钟）
 
-需要：Figma 账号（[Figma Make](https://www.figma.com/make/)，Make 和 Dev Mode MCP 需要付费席位，以官方为准）、[Figma 桌面端](https://www.figma.com/downloads/)（MCP server 只在桌面端运行）、本地 Coding Agent（Claude Code 或 Cursor）。
+需要：Figma 账号（[Figma Make](https://www.figma.com/make/)，Make、Copy design、MCP、Code Connect 的席位以官方为准）、本地 Coding Agent（Claude Code 或 Cursor）。推荐 **Remote MCP** `https://mcp.figma.com/mcp`（Cursor 可用 `/add-plugin figma` 或 `mcp.json`）。[Figma 桌面端](https://www.figma.com/downloads/)用于 Design 精修；Desktop MCP `http://127.0.0.1:3845/mcp` 仅特定企业场景。安装以 [Remote 安装](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/) 与 [MCP Guide](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) 为准。
 
 先把四份模板复制到项目目录并建好空文件：
 
@@ -151,25 +246,26 @@ Demo 结果示例：主管批量审批订单；风险任务 = 驳回（需理由
 
 怎么做：
 
-1. 打开 [figma.com/make](https://www.figma.com/make/)，新建一个 Make 项目（具体界面以官方为准）。
-2. 粘贴下面的启动 Prompt（内容来自你的四件套，不要只写一句话）。
-3. 生成后先预览主流程，再逐条要求补状态，不要指望一次生成全部。
+1. 打开 [figma.com/make](https://www.figma.com/make/)，新建一个 Make 项目（具体界面以官方为准）。复杂任务先开 **Plan mode**（入口以 [Use plan mode](https://help.figma.com/hc/en-us/articles/40830441709719-Use-plan-mode-in-Figma-Make) 为准）。
+2. 一次只给 1–2 个 frame。第一次只做壳层 + `/approvals` 默认态，**禁止整份 PRD 一次生成整站**。已有组件 npm 包时优先用 [Make kits](https://help.figma.com/hc/en-us/articles/39241689698839-Get-started-with-Make-kits)，不是必须。
+3. 粘贴下面的启动 Prompt（内容来自你的四件套，不要只写一句话）。后续一次一事迭代，每条写「禁止修改」；对话漂了就清上下文。
+4. 生成后先预览主流程，再逐条补状态。8 态是覆盖目标，不是一次生成的范围。Make 只验证交互，产出禁止当生产代码。
 
-可复制启动 Prompt（Demo 版）：
+可复制启动 Prompt（Demo 版，第一次只要壳 + 默认态）：
 
 ```text
-为企业订单系统做「审批队列 /approvals」高保真原型。
+为企业订单系统做「审批队列 /approvals」验证用原型（不是生产代码）。先出 Plan，不要直接生成整站。
 
+本轮只做：AppShell（侧栏+顶栏+内容槽）+ /approvals 默认态。
 角色与目标：主管筛选待审批订单，比较风险后批量批准或驳回。
 页面结构：
 - 顶部：标题"审批队列" + 待处理数量；右侧主按钮"批量审批（N）"，常显选中数。
 - 筛选栏：状态、客户、日期范围；显示已选筛选条件数。
 - 主体：订单表格（订单号、客户、金额、状态、更新时间、操作）；手机端变摘要卡片列表。
 - 分页 + 每页数量。
-必须生成的状态（每个单独一屏）：默认、加载（骨架屏）、空数据（引导文案+入口）、
-无结果（给清除筛选动作）、错误（可重试）、无权限（只读说明）、成功、部分失败（逐条说明失败原因）。
+本轮不做：加载/空数据/无结果/错误/无权限/成功/部分失败、/orders 列表、设置页。
 约束：危险操作（驳回）弹确认框并要求填理由；只使用给定文案，不造新数据；
-桌面 1440 宽优先，附 375 宽手机版。先输出页面清单确认，再生成页面。
+桌面 1440 宽优先。组件名对照组件清单，禁止自行新建同义组件。
 ```
 
 可复制迭代 Prompt（一次只改一件事）：
@@ -182,12 +278,12 @@ Demo 结果示例：主管批量审批订单；风险任务 = 驳回（需理由
 
 好/坏提示词对比：
 
-- ❌ 坏：`做一个好看的审批页面` —— 等于写一个无入参、无契约的接口，产物不可控、不可复现。
-- ✅ 好：上面的启动 Prompt —— 角色+目标+页面结构+**逐个状态**+约束+"先出页面清单确认"。这就是给设计写的接口契约。
+- ❌ 坏：`做一个好看的审批页面` —— 等于写一个无入参、无契约的接口，产物不可控、不可复现。更坏的是 `根据 PRD 一次生成全部页面和状态`。
+- ✅ 好：上面的启动 Prompt —— 角色+目标+页面结构+**本轮只做壳+默认态**+明确「本轮不做」+禁止自行新建组件。8 态靠后续一次一事补齐，这就是给设计写的接口契约。
 
 后端视角：把"必须生成的状态"当成异常分支穷举。你平时写 `try/catch` 会覆盖空、超时、无权限——界面同理，只做正常态等于只写了 happy path。迭代时务必带禁改项（"保持其他不变"），否则 AI 会顺手改坏已定稿部分，等于引入回归。
 
-产出与检查：原型覆盖状态矩阵里每个状态。检查：逐状态点一遍；长文案（客户名 20 字）不溢出；驳回流程能走完并回到列表。
+产出与检查：原型最终覆盖状态矩阵里每个状态（靠迭代，不是一次生成）。检查：逐状态点一遍；长文案（客户名 20 字）不溢出；驳回流程能走完并回到列表。
 
 ## 第 5 步：人工评审与整理（时间盒 1 小时）
 
@@ -197,10 +293,13 @@ Demo 结果示例：主管批量审批订单；风险任务 = 驳回（需理由
 
 1. 每个 state 截一张图，贴进 `design-review.md`，先评主任务、信息层级、危险操作，再评颜色。
 2. 结论写"已确认决策 / 被拒绝方案"，未通过退回第 4 步迭代。
-3. 把定稿原型转为可编辑的 Figma Design 文件，然后整理（MCP 读的就是这份结构）：
+3. 用官方 **Copy design** 把当前 preview 贴进 Figma Design（单向快照：不自动绑设计系统、不可交互、不回写 Make）。每个状态、每个关键 Dialog 各 Copy 一次。入口以 [Copy a Figma Make preview as design layers](https://help.figma.com/hc/en-us/articles/35060759685015-Copy-a-Figma-Make-preview-as-design-layers) 为准。然后**人**整理（MCP 读的就是这份结构，不要未整理就 MCP）：
    - Frame 命名 = 路由 + 状态，如 `/approvals/loading`、`/approvals/empty`；
    - 布局用 Auto Layout，不许绝对定位裸摆；
-   - 重复元素抽成 Component，颜色/间距存为变量（对应 [Design Token](../04-design-system/tokens.md)）。
+   - 重复元素做成 Component，页面上是实例，不要 detach；
+   - 颜色/间距存为 Variables（对应 [Design Token](../04-design-system/tokens.md)）；
+   - 删隐藏层和无意义嵌套；长文案用真实长度。
+   截图只做回归，不当间距来源。Make「改本地仓库」是封闭 beta，不是主路径。
 
 产出与检查：评审记录有结论；设计文件里找不到未命名 Frame（Layer 面板逐个看）。这些对应 [原型到代码](../06-engineering-workflow/prototype-to-code.md) 列出的常见返工源。
 
@@ -227,14 +326,17 @@ Demo 结果示例：主管批量审批订单；风险任务 = 驳回（需理由
 
 怎么做：
 
-1. Figma 桌面端登录同一账号，在设置里启用 Dev Mode MCP Server（需 Dev/Full 席位；入口和端点以 [Figma 官方 MCP 文档](https://www.figma.com/mcp-cc-ai-code/) 为准，默认监听本地 127.0.0.1）。
-2. 把本地端点注册进 Coding Agent，例如 Claude Code（命令与端点路径以官方文档为准）：
+1. 推荐 **Remote MCP**：端点 `https://mcp.figma.com/mcp`。Cursor 用 `/add-plugin figma` 或在 `mcp.json` 的 `mcpServers` 写入该 URL；Claude Code 用官方 plugin / `mcp add`（命令以 [Remote 安装](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/) 为准），例如：
    ```bash
-   claude mcp add --transport http figma-dev-mode http://127.0.0.1:3845/mcp
+   claude mcp add --transport http figma https://mcp.figma.com/mcp
    ```
-   Cursor 则在 `~/.cursor/mcp.json` 的 `mcpServers` 里加同名 URL 条目。
-3. 项目已有组件库时配置 [Code Connect](https://www.figma.com/developers/code-connect)：把设计里的组件映射到真实代码组件，MCP 才会返回"用你的 `OrderTable`"而不是让 Agent 重写一个。
-4. 在 Figma 里右键目标 Frame → Copy link to selection，把链接交给 Agent。
+   远程 MCP **必须 Copy link to selection**（链接含 node-id），看不到画布选区。席位与能力以 [MCP Guide](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) 为准。
+2. **Desktop MCP** 可选：Figma 桌面端 Dev Mode 启用本地服务 `http://127.0.0.1:3845/mcp`（Dev/Full 席位，特定企业内网再用）。注册示例：
+   ```bash
+   claude mcp add --transport http figma-desktop http://127.0.0.1:3845/mcp
+   ```
+3. 项目已有组件库时配置 [Code Connect](https://developers.figma.com/docs/code-connect/)（Org/Enterprise + Dev/Full）：把设计组件钉到真实代码 import。无映射时 Agent 会发明长得像的 div。
+4. 在 Figma 里右键目标 Frame → Copy link to selection，把链接交给 Agent。一次一个 Frame，不要整页丢给 `get_design_context`。MCP 返回的 React+Tailwind 是中间表示，必须翻译进本仓库组件和 Token。
 
 可复制 Coding Agent Prompt：
 
@@ -267,5 +369,12 @@ API 契约 [粘贴或文件路径]。
 | 颜色/间距硬编码进原型或代码 | 换主题/品牌色要全局搜替换 | 只用语义令牌，见 [Design Token](../04-design-system/tokens.md) |
 | 忽略键盘与无障碍 | 企业采购/合规验收不通过 | 组件清单里写清键盘行为，验收查焦点与对比度 |
 | 组件命名随意、到处新建同义组件 | MCP 无法映射、代码重复 | 命名规范贯穿路由→Frame→代码，见 [组件清单](../templates/component-inventory.md) |
+| AI 自称复用实际复制 | 每页私货，改一处其它页不变 | 人冻结组件库；缺组件走提案审批；对照 DOM 契约 |
+| 参照某页布局错 | `/orders` 做成详情卡片 | 只贴目标 Frame 链接，禁止「参考某页」 |
+| 全局抽取失败 | 半成品 DOM 分叉 | 禁止「全局抽取组件并改所有引用」 |
+| 多窗口未冻库 | 两套按钮、两套间距 | 未冻结组件库禁止并行 |
+| Copy design 当双向同步 | Design 改了 Make 不会变 | 单向快照；Make 只作交互证据 |
+| 把 MCP Tailwind 当生产代码 | 仓库出现一次性 div + 杂类 | 翻译进库存组件和 Token；无 Code Connect 更要钉契约 |
+| 整页丢给 get_design_context | 读错节点、上下文爆 | 一次一个 Frame，必须 Copy link to selection |
 
-全程约一个工作日（Demo 单页）。多页面时，第 1-3 步一次做完，第 4 步之后按页循环。技术选型和工具边界见 [工具矩阵](../07-tools/tool-matrix.md)。
+全程约一个工作日（Demo 单页）。多页面时，第 1–3 步（路径 A）或四件套+冻库（路径 B）一次做完，Make 之后按页循环。技术选型和工具边界见 [工具矩阵](../07-tools/tool-matrix.md)。

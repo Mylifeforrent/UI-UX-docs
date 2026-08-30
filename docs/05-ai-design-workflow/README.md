@@ -57,7 +57,7 @@
 ### 升级路径建议
 
 **L0 → L1**（预计 1-2 周）：
-- 复制 [模板](../templates/) 到项目目录
+- 复制 [UI Brief](../templates/ui-brief.md)、[页面清单](../templates/page-inventory.md)、[组件清单](../templates/component-inventory.md) 到项目目录
 - 下次使用 AI 时，先填 UI Brief 和状态矩阵
 - 观察结果是否更稳定
 
@@ -165,8 +165,9 @@ G6 验收交付
 
 | 文档 | 解决的问题 | 什么时候读 | 预计时长 |
 | --- | --- | --- | --- |
-| [原型先行全流程实操](prototype-first-workflow.md) | 竞品拆解 → 建模 → Make 原型 → PRD 反写 → MCP 生成代码 | 想端到端跑通一页时 | 1 小时 + 1 天实操 |
-| [Figma 体系](figma-stack.md) | 四层职责、文件与命名规范、Token 管道、Code Connect、MCP 排障 | 建立设计基线和接入 MCP 时 | 25 分钟 |
+| [原型先行全流程实操](prototype-first-workflow.md) | 竞品拆解 → 建模 → Make 原型 → PRD 反写 → MCP 生成代码 | 想端到端跑通一页时（路径 A） | 1 小时 + 1 天实操 |
+| [Figma Make 高保真保姆级教程](figma-make-high-fidelity.md) | PRD 已完备时：四件套 → 冻组件 → Make 逐页 → Copy design → MCP 落地 | 走路径 B、要用 Make 做高保真并写代码时 | 1 小时 + 按天实操 |
+| [Figma 体系](figma-stack.md) | 四层职责、Copy design、Remote/Desktop MCP、Code Connect | 建立设计基线和接入 MCP 时 | 25 分钟 |
 | [视觉评审闭环](visual-review-loop.md) | 固定视口、检查顺序、问题分级、回归矩阵 | 每次改完界面 | 15 分钟 |
 
 ### 协作指南
@@ -237,7 +238,7 @@ G6 验收交付
 
 关键：**显性化隐性知识**。传统流程中，很多知识在设计师和工程师的脑子里（如”这个状态用哪个颜色”、”错误提示怎么写”），AI 工作流要求把这些知识写成文档，让 AI 可以读取和遵循。
 
-外部产品能力会持续变化。涉及 Figma AI、Figma Make、Dev Mode MCP 的席位、入口和端点，一律以 [Figma 官方 AI 文档](https://www.figma.com/ai/) 和 [Figma Make](https://www.figma.com/make/) 为准，不要把本仓库的描述当作固定事实。
+外部产品能力会持续变化。涉及 Figma AI、Figma Make、Figma MCP（Remote / Desktop）、Copy design、Code Connect 的席位、入口和端点，一律以 [Figma 官方 AI 文档](https://www.figma.com/ai/)、[Figma Make](https://www.figma.com/make/) 与 [MCP Guide](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) 为准，不要把本仓库的描述当作固定事实。
 
 ## 快速启动（30 分钟验证）
 

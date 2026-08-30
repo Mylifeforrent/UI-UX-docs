@@ -2,7 +2,7 @@
 
 这套 SOP 把设计工作转成后端工程师熟悉的输入、输出和验收条件。按顺序执行，每一步都留下文档或测试证据。
 
-1. [PRD 到原型](prd-to-prototype.md)：角色、任务、页面、组件和状态。
+1. [PRD 到原型](prd-to-prototype.md)：角色、任务、页面、组件和状态。已有完备 PRD、要用 Make 做高保真时，按该文六步做，逐步操作见 [Figma Make 高保真保姆级教程](../05-ai-design-workflow/figma-make-high-fidelity.md)。
 2. [原型到代码](prototype-to-code.md)：Frame/Variant 到路由、组件、props 和交互测试。
 3. [真实数据接入](real-data-integration.md)：API、fixture、权限、错误和部分失败。
 4. [交付验收清单](acceptance-checklist.md)：视觉、响应式、键盘、数据和安全证据。

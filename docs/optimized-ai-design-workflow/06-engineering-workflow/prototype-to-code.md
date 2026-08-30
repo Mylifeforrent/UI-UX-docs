@@ -2,12 +2,12 @@
 
 ← 返回 [工程工作流](README.md) · [原型先行全流程主文档](../imports/prototype-first-workflow.md)
 
-两条路线共用的下半段：把已验证、已整理的设计文件，交给本地 Coding Agent 生成生产代码。重点在**如何避免返工**和**哪些必须人工确认**。
+两条路线共用的下半段：把已验证、已整理的设计文件，交给本地 Coding Agent 生成生产代码。重点在**如何避免返工**和**哪些必须人工确认**。优先用 Frame 选区链接 + MCP 读取精修结构，不要只丢截图。MCP `get_design_context` 是 React+Tailwind 中间表示；无 [Code Connect](https://developers.figma.com/docs/code-connect/) 时禁止把它当最终实现，必须翻译进本仓库组件 + Token。Make 产出禁止当生产代码。逐步操作见 [Figma Make 高保真保姆级教程](../imports/figma-make-high-fidelity.md) Step I–K。
 
 ## 前提（缺一不可）
 
-- 设计文件已整理：Frame 命名 = 路由 + 状态，Auto Layout，组件与变量齐全（见 [Figma 体系](../imports/figma-stack.md)）。
-- Dev Mode MCP 已注册进 Agent；有组件库的已配 Code Connect。
+- 设计文件已整理：Frame 命名 = 路由 + 状态，Auto Layout，组件与变量齐全（见 [Figma 体系](../imports/figma-stack.md)）。不要未整理就 MCP。
+- 推荐 Remote MCP（`https://mcp.figma.com/mcp`，必须 Copy link to selection）；Desktop MCP 可选。有组件库且有席位的已配 Code Connect；无映射时禁止把 MCP 中间表示当最终实现。
 - PRD、[组件清单](../templates/component-inventory.md)、[Design Token](../04-design-system/tokens.md) 就绪。
 
 ## 生成流程（先计划后写码）

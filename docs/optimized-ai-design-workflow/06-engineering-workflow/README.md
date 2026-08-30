@@ -22,7 +22,7 @@
 
 ## 本章文档
 
-- [PRD 到原型](prd-to-prototype.md) —— PRD 先行路线，含灰度线框画法
+- [PRD 到原型](prd-to-prototype.md) —— PRD 先行路线（路径 B），含灰度线框与三解法；逐步操作见 [Figma Make 高保真保姆级教程](../imports/figma-make-high-fidelity.md)
 - [原型到代码](prototype-to-code.md) —— 两条线共用的下半段与返工源清单
 - [交付验收清单](acceptance-checklist.md) —— 最终交付前逐条勾选
 

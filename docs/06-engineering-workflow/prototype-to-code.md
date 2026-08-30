@@ -1,6 +1,6 @@
 # 原型到代码
 
-把已评审原型翻译成路由、组件、状态和测试。目标是让代码表达设计系统，而不是把截图硬编码成一次性页面。
+把已评审原型翻译成路由、组件、状态和测试。目标是让代码表达设计系统，而不是把截图硬编码成一次性页面。优先用 Frame 选区链接 + [Figma MCP](../05-ai-design-workflow/figma-stack.md) 读取精修结构，不要只丢截图。MCP `get_design_context` 是 React+Tailwind 中间表示；无 [Code Connect](https://developers.figma.com/docs/code-connect/) 时禁止把它当最终实现，必须翻译进本仓库组件 + Token。Make 产出禁止当生产代码。
 
 ## 映射表
 
